@@ -1,0 +1,14 @@
+[storage]
+type = "local"
+root = "data"
+
+[api]
+base_url = "http://localhost:9900"
+amount = 10000
+timeout_seconds = 30
+
+[bronze]
+raw_retention_days = 30
+
+[quality]
+max_velocity_kmh = 300

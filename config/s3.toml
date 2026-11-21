@@ -1,0 +1,16 @@
+# Example only: requires `uv sync --extra s3` and AWS credentials in the environment.
+# Backend options (fsspec + Polars storage_options) go in `options = { ... }`.
+[storage]
+type = "s3"
+root = "s3://my-bucket/upstream-dlk"
+
+[api]
+base_url = "http://localhost:9900"
+amount = 10000
+timeout_seconds = 30
+
+[bronze]
+raw_retention_days = 30
+
+[quality]
+max_velocity_kmh = 300

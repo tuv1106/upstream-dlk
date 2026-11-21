@@ -1,0 +1,12 @@
+# Prefect settings for this project (read from the working directory).
+[server]
+# The telemetry heartbeat races the temporary server's SQLite writes ("database is locked").
+analytics_enabled = false
+
+[logging]
+# Show the pipeline's own warnings (quarantined rows, schema drift) in Prefect logs.
+extra_loggers = "upstream_dlk"
+
+[logging.to_api]
+# Layer code also logs outside flows (e.g. in tests); skip sending those logs to the API.
+when_missing_flow = "ignore"
