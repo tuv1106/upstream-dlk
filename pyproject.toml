@@ -38,4 +38,5 @@ testpaths = ["tests"]
 dev = [
     "pytest>=9.2.0",
     "ruff>=0.17.6",
+    "trino>=0.340.0",
 ]

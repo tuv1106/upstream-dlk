@@ -108,3 +108,6 @@
 - Column names from the user are validated against the bronze schema before going into SQL (otherwise our own query would be injectable).
 - Publish is retry-safe at every step: staged files, quarantine and raw archive are each moved only if still in staging. Resume treats a run as landed if its raw file is in staging or already archived. `FileNotFoundError` is not retried.
 - Raw expiry runs last in the pipeline, so housekeeping never blocks silver or gold.
+- Verified on real Trino: `tests/test_trino.py` loads the same rows into Trino's `memory` catalog, runs the generated query, and asserts Trino == Polars == expected. Skipped when no Trino listens on localhost:8080.
+- Regex edge cases tested on both engines: keyword alone, lowercase (no match, case-sensitive), keyword inside a word (`SELECTOR`, no match thanks to `\b`), `UNION ALL`, one quote (`it's`, no match) vs a quoted string, `;`, and a value matching several regexes.
+- Publish idempotency uses file location as the log (staging = not done, archive = done). A write-ahead log would be the general tool when steps cannot be checked from state, e.g. writes to an external system.

@@ -93,3 +93,29 @@ class Lake:
 def make_lake(tmp_path) -> Callable[..., Lake]:
     """Returns a factory building a Lake whose fake API serves the given batches in order."""
     return lambda *batches: Lake(str(tmp_path), *batches)
+
+
+SPEC_REGEX = (
+    r"('(''|[^'])*')|(;)|(\b(ALTER|CREATE|DELETE|DROP|EXEC(UTE){0,1}|INSERT( +INTO){0,1}"
+    r"|MERGE|SELECT|UPDATE|UNION( +ALL){0,1})\b)"
+)
+DROP_REGEX = r"\bDROP\b"
+UNION_REGEX = r"\bUNION( +ALL)?\b"
+REGEXES = [SPEC_REGEX, DROP_REGEX, UNION_REGEX]
+
+REGEX_CASES = {
+    "plain value": [],
+    "DROP": sorted([SPEC_REGEX, DROP_REGEX]),
+    "drop": [],
+    "SELECTOR": [],
+    "x UNION ALL y": sorted([SPEC_REGEX, UNION_REGEX]),
+    "it's": [],
+    "'quoted'": [SPEC_REGEX],
+    "a;b": [SPEC_REGEX],
+}
+"""Vin value -> regexes it must match: keywords, case, word boundaries, quotes, semicolons."""
+
+
+def regex_case_messages() -> list[dict]:
+    """Returns one message per regex case, each in its own millisecond."""
+    return [message(vin=vin, timestamp=T0 + i) for i, vin in enumerate(REGEX_CASES)]

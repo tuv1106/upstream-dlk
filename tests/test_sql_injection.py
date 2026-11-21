@@ -1,12 +1,7 @@
 import pytest
-from conftest import T0, epoch_ms, message
+from conftest import REGEX_CASES, REGEXES, SPEC_REGEX, T0, epoch_ms, message, regex_case_messages
 
 from upstream_dlk.layers.sql_injection import SqlInjectionReport
-
-SPEC_REGEX = (
-    r"('(''|[^'])*')|(;)|(\b(ALTER|CREATE|DELETE|DROP|EXEC(UTE){0,1}|INSERT( +INTO){0,1}"
-    r"|MERGE|SELECT|UPDATE|UNION( +ALL){0,1})\b)"
-)
 
 
 @pytest.fixture
@@ -76,3 +71,13 @@ def test_trino_sql_covers_text_columns_and_escapes_quotes(report):
     assert "('(''(''''|[^''])*'')" in sql
     assert 'b."vin" = v.value' in sql and 'b."model" = v.value' in sql
     assert '"year"' not in sql
+
+
+def test_regex_edge_cases(make_lake):
+    lake = make_lake(regex_case_messages())
+    lake.ingest(1)
+
+    df = SqlInjectionReport(lake.storage).build(["vin"], REGEXES)
+
+    found = dict(df.select("vin", "matched_regexes").rows())
+    assert found == {vin: regexes for vin, regexes in REGEX_CASES.items() if regexes}

@@ -10,6 +10,7 @@ uv sync
 uv run dlk                                   # bronze -> silver -> gold
 uv run dlk --run-id 20261121T101500123456Z   # resume a failed bronze run
 uv run pytest
+docker run -d -p 8080:8080 trinodb/trino && uv run pytest tests/test_trino.py   # runs the generated Trino SQL for real (skipped without Trino)
 uv run ruff check src tests
 ```
 
